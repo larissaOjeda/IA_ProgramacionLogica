@@ -78,7 +78,7 @@ saltosEnPosicion(tab, X,Y, LMov, Lnums): - tableroValido(tab), ValidLocation(X,Y
                                             tryMoveRight(X,Y,tab,Lmov,Lnums,N),
                                             tryMoveLeft(X,Y,tab,Lmov,Lnums,N),
                                             tryMoveUp(X,Y,tab,ListMov,Lnums,N),
-                                            tryMoveDown(X,Y,tab,ListMov,Lnums,N)
+                                            tryMoveDown(X,Y,tab,ListMov,Lnums,N).
 
 % Parametros: X,Y, tablero
 % Return: true si las coordenadas son válidas
@@ -97,7 +97,7 @@ tryMoveRight(X,Y,tab,[der|MovList],[Head|NumList],N):- X < N,
 % Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), MovList(Lista de Movs)
 % Return: true si pudo avanzar una casilla a la izquierda, concatena el movimiento a listMov.
 % Avanza al siguiente elemento si es que pudo moverse a la izquierda de nuevo y repite el procedimiento.
-tryMoveLeft((_,_,_,[],[],_).).
+tryMoveLeft((_,_,_,[],[],_).
 tryMoveLeft(X,Y,tab,[izq|MovList],[Head|NumList],N):- X > 1,
                                                       tryMoveLeft(X-1,Y,tab,MovList,NumList,N).
 
@@ -108,7 +108,7 @@ tryMoveLeft(X,Y,tab,[izq|MovList],[Head|NumList],N):- X > 1,
 % Avanza al siguiente elemento si es que pudo moverse hacia arriba de nuevo y repite el procedimiento.
 tryMoveUp(_,_,_,[],[],_).
 tryMoveUp(X,Y,tab,[arr|MovList],[Head|NumList],N):- Y > 1,
-                                                  tryMoveUp(X,Y-1,tab,MovList,NumList,N)
+                                                  tryMoveUp(X,Y-1,tab,MovList,NumList,N).
 
 
 
