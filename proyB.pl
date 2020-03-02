@@ -1,12 +1,4 @@
-tablero([[1,4,5,8],[7,4,1,9],[2,5,5,6],[9,8,3,8]]).
 
-main(T,ListaNums,Sol):-
-  tableroValido(T,N),!,
-  buscaOrigen(T,ListaNums,X,Y),
-  buscarCadena(T,ListaNums,X,Y,Cad),
-  escribeResp(X,Y,Cad),
-  fail.
-main(T,ListaNums,Sol).
 
 escribeResp(X,Y,Cad):-
   write('Punto de origen: '),
@@ -63,40 +55,66 @@ listaDigitos([L|L1]):-
   L>0,
   listaDigitos(L1).
 
-tableroValido(T,N):-
-  nPorN(T,N),
-  append(T,L),
-  listaDigitos(L).
+% tableroValido(T,N):-
+%  nPorN(T,N),
+%  append(T,L),
+%  listaDigitos(L).
 %--------------------------------- Added by Larissa --------------------------------------------------------------------------------------------------------------
 
-% Parametros: tablero
+% Parametros: T = tablero
 % Return: true si el tablero es de NxN
 % La condición de salida es cuando la lista este vacía.
 tableroValido([],_).
-tableroValido(L):- length(L,N), tableroValido(L,N). % Entra a lista y se mide la longitud.
-tableroValido([X|L],N):- length(X,N1), coordenadaValida(X,N), N==N1,  tableroValido(L,N). % Revisa renglon a renglon el tamaño, revisa 0<x<10 con coordenadaValida.
+tableroValido(T):- length(T,N), tableroValido(T,N). % Mide las coordenadas en Y.
+tableroValido([X|T],N):-length(X,N1), validCoord(X), N==N1,  tableroValido(T,N). % Entra a las sublistas y compara el número de elementos con N (N = Y).
+
+% Parametros = X (Número)
+% Return true si 0<num<10
+validCoord([]).
+validCoord([X|L]):-X>=0, X=<9, integer(X), validCoord(L).
 
 % saltosEnPosicion(+Tablero,-X,-Y,-ListaMov,+ListaNums)
-saltosEnPosicion(tab, X,Y, LMov, LNums): - tableroValido(tab), ValidLocation(X,Y),
-                                            tryMoveRight(X,Y,tab, ListMov, N),
-                                            tryMoveRight(X,Y,tab, L)
-                                            tryMoveLeft(X,Y,ListMov, N),
-                                            tryMoveUp(X,Y,ListMov, N);
-                                            tryMoveDown(X,Y,ListMov, N)
+saltosEnPosicion(tab, X,Y, LMov, Lnums): - tableroValido(tab), ValidLocation(X,Y,tab), length(tab, N),
+                                            tryMoveRight(X,Y,tab,Lmov,Lnums,N),
+                                            tryMoveLeft(X,Y,tab,Lmov,Lnums,N),
+                                            tryMoveUp(X,Y,tab,ListMov,Lnums,N),
+                                            tryMoveDown(X,Y,tab,ListMov,Lnums,N)
 
 % Parametros: X,Y, tablero
 % Return: true si las coordenadas son válidas
 % Revisa si las coordenadas dadas estan en el rango del tablero
-ValidLocation(X,Y,[]):- length(tab,L), X =< L, Y =< L.
+ValidLocation(X,Y,tab):- length(tab,L), X =< L, Y =< L.
 
 
-% Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), listMov(Lista de Movs).
+% Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), MovList(Lista de Movs)
 % Return: true si pudo avanzar una casilla a la derecha, concatena el movimiento a listMov.
 % Avanza al siguiente elemento si es que pudo moverse a la derecha de nuevo y repite el procedimiento.
-tryMoveRight(X, Y, tab, N, listMov):-  X < N,
-                          append(ListMov, "Este"),
-                          tryMoveRight(X+1,Y,(Head|Tail), ListMov,N).
+tryMoveRight(_,_,_,[],[],_).
+tryMoveRight(X,Y,tab,[der|MovList],[Head|NumList],N):- X < N,
+                                                          tryMoveRight(X+1,Y, tab, MovList, NumList,N).
 
-% tryMoveLeft(X,Y,ListMov, N):
-% tryMoveUp(X,Y,ListMov, N):
-% tryMoveDown(X,Y,ListMov, N):
+
+% Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), MovList(Lista de Movs)
+% Return: true si pudo avanzar una casilla a la izquierda, concatena el movimiento a listMov.
+% Avanza al siguiente elemento si es que pudo moverse a la izquierda de nuevo y repite el procedimiento.
+tryMoveLeft((_,_,_,[],[],_).).
+tryMoveLeft(X,Y,tab,[izq|MovList],[Head|NumList],N):- X > 1,
+                                                      tryMoveLeft(X-1,Y,tab,MovList,NumList,N).
+
+
+
+% Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), MovList(Lista de Movs)
+% Return: true si pudo avanzar una casilla arriba, concatena el movimiento a listMov.
+% Avanza al siguiente elemento si es que pudo moverse hacia arriba de nuevo y repite el procedimiento.
+tryMoveUp(_,_,_,[],[],_).
+tryMoveUp(X,Y,tab,[arr|MovList],[Head|NumList],N):- Y > 1,
+                                                  tryMoveUp(X,Y-1,tab,MovList,NumList,N)
+
+
+
+% Parametros: X,Y (Coordenadas), tab (Tablero), N (Tamaño del tablero), MovList(Lista de Movs)
+% Return: true si pudo avanzar una casilla abajo, concatena el movimiento a listMov.
+% Avanza al siguiente elemento si es que pudo moverse hacia abajo de nuevo y repite el procedimiento.
+tryMoveDown(_,_,_,[],[],_).
+tryMoveDown(X,Y,tab,[abajo|MovList],[Head|NumList],N): Y < N,
+                                                      tryMoveDown(X,Y+1,tab,MovList,NumList,N).
